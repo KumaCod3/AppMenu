@@ -1,0 +1,28 @@
+1
+Pranzo: VegBurger
+Cena: Bowl Tempeh zucchine
+
+2
+Pranzo: Padellata del boscaiolo
+Cena: Pasta con Cavolo Nero
+
+3
+Pranzo: Pasta Zucca e Tofu
+Cena: Pasta Pisellini e Sgombro
+
+4
+Pranzo: Pasta con cavoletti di bruxelles
+Cena: Risotto cipolle e fontina
+
+5
+Pranzo: Pasta e Fagioli
+Cena: Pasta Avocado e Zucchini
+
+6
+Pranzo: Pasta Carciofi e Edamame
+Cena: Pasta fagiolini e robiola--aggiungere all'app
+
+7
+Pranzo: Pasta cavolfiori e feta
+Cena: https://blog.giallozafferano.it/piovonoricette/ricetta-pasta-cremosa-alle-olive/
+

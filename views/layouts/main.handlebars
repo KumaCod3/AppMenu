@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>My Menu</title>
+
+	<!-- Tailwind CSS Play CDN -->
+	<script src="https://cdn.tailwindcss.com"></script>
+	<!-- Lucide Icons -->
+	<script src="https://unpkg.com/lucide@latest"></script>
+
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#8322B0',
+						'primary-dark': '#6a1b8e',
+						neutral: {
+							background: '#F8F9FA',
+							surface: '#FFFFFF',
+							text: '#1A1A1B',
+							secondary: '#6B7280'
+						}
+					},
+					borderRadius: {
+						'custom': '14px',
+					},
+					boxShadow: {
+						'subtle': '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+					}
+				}
+			}
+		}
+	</script>
+
+	<style type="text/tailwindcss">
+		@layer base {
+			body {
+				@apply bg-[#F8F9FA] text-[#1A1A1B] font-sans antialiased;
+			}
+		}
+		@layer components {
+			.btn-primary {
+				@apply bg-primary text-white px-4 py-2 rounded-custom shadow-subtle hover:bg-primary-dark transition-all duration-200 flex items-center gap-2;
+			}
+			.btn-secondary {
+				@apply border-2 border-primary text-primary px-4 py-2 rounded-custom hover:bg-primary hover:text-white transition-all duration-200 flex items-center gap-2;
+			}
+			.nav-link {
+				@apply flex items-center gap-3 p-3 rounded-custom text-neutral-secondary hover:bg-primary/10 hover:text-primary transition-all duration-200;
+			}
+			.nav-link.active {
+				@apply bg-primary text-white shadow-subtle;
+			}
+		}
+	</style>
+</head>
+
+<body class="flex min-h-screen">
+
+	<!-- Sidebar / Navigation Rail -->
+	<aside
+		class="w-20 lg:w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-20 transition-all duration-300">
+		<div class="p-6 flex items-center justify-center lg:justify-start gap-3">
+			<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">
+				<i data-lucide="utensils-crossed"></i>
+			</div>
+			<span class="hidden lg:block font-bold text-xl tracking-tight text-primary">Menu App</span>
+		</div>
+
+		<nav class="flex-1 px-4 py-6 space-y-2">
+			<a href="/menu" class="nav-link" id="nav-menu">
+				<i data-lucide="calendar"></i>
+				<span class="hidden lg:block">I miei Menu</span>
+			</a>
+			<a href="/ricette" class="nav-link" id="nav-ricette">
+				<i data-lucide="salad"></i>
+				<span class="hidden lg:block">Le Ricette</span>
+			</a>
+			<a href="/ingredienti" class="nav-link" id="nav-ingredienti">
+				<i data-lucide="carrot"></i>
+				<span class="hidden lg:block">Ingredienti</span>
+			</a>
+		</nav>
+
+		<div class="p-4 border-t border-gray-100">
+			<div class="flex items-center gap-3 p-2 rounded-custom hover:bg-gray-50 transition-colors">
+				<img src="/images/logo.png" class="w-8 h-8 rounded-full"
+					onerror="this.src='https://ui-avatars.com/api/?name=Kuma&background=8322B0&color=fff'" />
+				<div class="hidden lg:block">
+					<p class="text-sm font-semibold">KumaCod3</p>
+					<p class="text-xs text-neutral-secondary">Admin</p>
+				</div>
+			</div>
+		</div>
+	</aside>
+
+	<!-- Main Content Area -->
+	<div class="flex-1 flex flex-col ml-20 lg:ml-64 transition-all duration-300">
+
+		<!-- Main Workspace - Header removed as requested -->
+		<main class="flex-1 p-8">
+			<div class="max-w-7xl mx-auto">
+				{{{body}}}
+			</div>
+		</main>
+
+		<!-- Footer -->
+		<footer class="p-8 border-t border-gray-200 text-center text-sm text-neutral-secondary">
+			<p>Made with ❤️ by <a href="mailto:kumacod3@proton.me" class="font-semibold text-primary">KumaCod3</a></p>
+		</footer>
+	</div>
+
+	<!-- Lucide Initialization -->
+	<script>
+		lucide.createIcons();
+
+		// Highlight active nav based on URL
+		const currentPath = window.location.pathname;
+		if (currentPath.includes('/menu')) document.getElementById('nav-menu').classList.add('active');
+		if (currentPath.includes('/ricette')) document.getElementById('nav-ricette').classList.add('active');
+		if (currentPath.includes('/ingredienti')) document.getElementById('nav-ingredienti').classList.add('active');
+	</script>
+
+	<!-- Global Script for Modals -->
+	<script>
+		function showModal(modalId) {
+			const modal = document.getElementById(modalId);
+			if (modal) {
+				modal.classList.remove('hidden');
+				// Try to find a slide-over container
+				const container = modal.querySelector('[id$="Container"]');
+				if (container) {
+					setTimeout(() => container.classList.remove('translate-x-full'), 10);
+				}
+				// Fade effect
+				setTimeout(() => modal.classList.add('opacity-100'), 10);
+			}
+		}
+		function hideModal(modalId) {
+			const modal = document.getElementById(modalId);
+			if (modal) {
+				const container = modal.querySelector('[id$="Container"]');
+				if (container) {
+					container.classList.add('translate-x-full');
+				}
+				modal.classList.remove('opacity-100');
+				setTimeout(() => modal.classList.add('hidden'), 300);
+			}
+		}
+	</script>
+	</head>
+
+</html>

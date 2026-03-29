@@ -1,0 +1,464 @@
+<!-- Featured: Piatto del Giorno -->
+<div id="piattoDelGiornoContainer" class="hidden mb-10">
+	<div class="bg-white rounded-custom border-l-8 border-primary shadow-subtle overflow-hidden">
+		<div class="p-6">
+			<div class="flex items-center justify-between mb-4">
+				<div class="flex items-center gap-3">
+					<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+						<i data-lucide="star" class="fill-primary/20"></i>
+					</div>
+					<div>
+						<h2 class="text-xl font-bold text-neutral-text">Piatto del Giorno</h2>
+						<p id="activeMenuInfo" class="text-xs text-neutral-secondary">Menu in corso</p>
+					</div>
+				</div>
+				<div class="px-4 py-1.5 bg-primary/5 rounded-full border border-primary/10">
+					<span id="currentDayBadge" class="text-sm font-bold text-primary italic">GIORNO 1</span>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<!-- Pranzo -->
+				<div class="flex flex-col p-4 rounded-xl bg-gray-50/50 border border-gray-100">
+					<div class="flex items-center gap-2 mb-2 text-neutral-secondary">
+						<i data-lucide="sun" class="w-4 h-4 text-orange-400"></i>
+						<span class="text-xs font-bold uppercase tracking-wider">Pranzo</span>
+					</div>
+					<h3 id="pranzoName" class="text-lg font-bold text-neutral-text">-</h3>
+				</div>
+				<!-- Cena -->
+				<div class="flex flex-col p-4 rounded-xl bg-gray-50/50 border border-gray-100">
+					<div class="flex items-center gap-2 mb-2 text-neutral-secondary">
+						<i data-lucide="moon" class="w-4 h-4 text-primary"></i>
+						<span class="text-xs font-bold uppercase tracking-wider">Cena</span>
+					</div>
+					<h3 id="cenaName" class="text-lg font-bold text-neutral-text">-</h3>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Header & Actions -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+	<div>
+		<h1 class="text-3xl font-bold text-neutral-text">I miei Menu</h1>
+		<p class="text-neutral-secondary">Organizza i tuoi piani alimentari settimanali</p>
+	</div>
+	<div class="flex flex-wrap gap-3">
+		<button id="DROPButton" class="btn-secondary text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700">
+			<i data-lucide="trash-2" class="w-4 h-4"></i>
+			Elimina Tutto
+		</button>
+		<button onclick="showModal('menuModal')" class="btn-primary">
+			<i data-lucide="plus" class="w-4 h-4"></i>
+			Crea Nuovo Menu
+		</button>
+	</div>
+</div>
+
+<!-- Main Container for Menus -->
+<div id="menusContainer" class="space-y-10">
+	<!-- Grid of Menu Cards will be rendered here -->
+</div>
+
+<!-- Modal for New Menu -->
+<div id="menuModal" class="fixed inset-0 z-50 hidden transition-all duration-300">
+	<div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onclick="hideModal('menuModal')">
+	</div>
+	<div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300"
+		id="menuModalContainer">
+		<div class="p-6 border-b border-gray-100 flex items-center justify-between bg-primary text-white">
+			<div class="flex items-center gap-3">
+				<i data-lucide="calendar-plus"></i>
+				<h2 class="text-xl font-bold">Nuovo Piano Menu</h2>
+			</div>
+			<button onclick="hideModal('menuModal')" class="p-2 hover:bg-white/20 rounded-full transition-colors">
+				<i data-lucide="x"></i>
+			</button>
+		</div>
+
+		<form id="newMenuForm" class="flex-1 p-6 space-y-6">
+			<div class="space-y-1">
+				<label class="text-sm font-semibold text-neutral-secondary">Titolo del Menu</label>
+				<input type="text" id="Titolo" placeholder="Es. Menu Autunnale 2024"
+					class="w-full px-4 py-2 border border-gray-200 rounded-custom focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+				<p class="text-[10px] text-gray-400">Lascia vuoto per un nome casuale saporito!</p>
+			</div>
+
+			<div class="space-y-3">
+				<label class="text-sm font-semibold text-neutral-secondary block">Stagionalità</label>
+				<div class="grid grid-cols-2 gap-3">
+					<label
+						class="flex items-center gap-3 p-3 border border-gray-100 rounded-custom bg-gray-50 cursor-pointer hover:border-primary/30 transition-all">
+						<input type="checkbox" id="Temperatura1" class="w-4 h-4 accent-primary">
+						<span class="text-sm font-medium">☀️ Estate</span>
+					</label>
+					<label
+						class="flex items-center gap-3 p-3 border border-gray-100 rounded-custom bg-gray-50 cursor-pointer hover:border-primary/30 transition-all">
+						<input type="checkbox" id="Temperatura2" class="w-4 h-4 accent-primary">
+						<span class="text-sm font-medium">❄️ Inverno</span>
+					</label>
+				</div>
+			</div>
+		</form>
+
+		<div class="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
+			<button onclick="hideModal('menuModal')"
+				class="flex-1 px-4 py-3 border border-gray-200 rounded-custom font-semibold hover:bg-gray-100 transition-colors">Annulla</button>
+			<button id="submitButton" class="flex-1 btn-primary justify-center font-bold">Crea Menu</button>
+		</div>
+	</div>
+</div>
+
+<!-- Modal for Day Selection -->
+<div id="daySelectionModal" class="fixed inset-0 z-[60] hidden transition-all duration-300">
+	<div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+		onclick="hideModal('daySelectionModal')"></div>
+	<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white rounded-custom shadow-2xl p-6 transform scale-95 transition-transform duration-300 shadow-modal"
+		id="daySelectionModalContainer">
+		<div class="flex flex-col items-center text-center space-y-4">
+			<div class="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center">
+				<i data-lucide="calendar-range" class="w-8 h-8"></i>
+			</div>
+			<div class="space-y-1">
+				<h3 class="text-xl font-bold text-neutral-text">Attiva Menu</h3>
+				<p class="text-sm text-neutral-secondary">Da quale giorno desideri iniziare il conteggio?</p>
+			</div>
+
+			<div class="grid grid-cols-4 gap-2 w-full">
+				<button onclick="selectStartDay(0)"
+					class="day-btn p-3 border border-gray-100 rounded-lg font-bold hover:bg-primary/10 hover:border-primary/30 transition-all">1</button>
+				<button onclick="selectStartDay(1)"
+					class="day-btn p-3 border border-gray-100 rounded-lg font-bold hover:bg-primary/10 hover:border-primary/30 transition-all">2</button>
+				<button onclick="selectStartDay(2)"
+					class="day-btn p-3 border border-gray-100 rounded-lg font-bold hover:bg-primary/10 hover:border-primary/30 transition-all">3</button>
+				<button onclick="selectStartDay(3)"
+					class="day-btn p-3 border border-gray-100 rounded-lg font-bold hover:bg-primary/10 hover:border-primary/30 transition-all">4</button>
+				<button onclick="selectStartDay(4)"
+					class="day-btn p-3 border border-gray-100 rounded-lg font-bold hover:bg-primary/10 hover:border-primary/30 transition-all">5</button>
+				<button onclick="selectStartDay(5)"
+					class="day-btn p-3 border border-gray-100 rounded-lg font-bold hover:bg-primary/10 hover:border-primary/30 transition-all">6</button>
+				<button onclick="selectStartDay(6)"
+					class="day-btn p-3 border border-gray-100 rounded-lg font-bold hover:bg-primary/10 hover:border-primary/30 transition-all">7</button>
+			</div>
+
+			<div class="w-full mt-2">
+				<button onclick="hideModal('daySelectionModal')"
+					class="w-full px-4 py-3 border border-gray-200 rounded-custom font-semibold hover:bg-gray-100 transition-colors">Annulla</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal for Delete Confirmation -->
+<div id="deleteConfirmModal" class="fixed inset-0 z-[60] hidden transition-all duration-300">
+	<div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+		onclick="hideModal('deleteConfirmModal')"></div>
+	<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white rounded-custom shadow-2xl p-6 transform scale-95 transition-transform duration-300 shadow-modal"
+		id="deleteConfirmModalContainer">
+		<div class="flex flex-col items-center text-center space-y-4">
+			<div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
+				<i data-lucide="alert-triangle" class="w-8 h-8"></i>
+			</div>
+			<div class="space-y-1">
+				<h3 class="text-xl font-bold text-neutral-text">Elimina Menu</h3>
+				<p class="text-sm text-neutral-secondary">Sei sicuro di voler eliminare definitivamente questo menu e
+					tutte le sue settimane? Questa azione è irreversibile.</p>
+			</div>
+
+			<div class="grid grid-cols-2 gap-3 w-full mt-2">
+				<button onclick="hideModal('deleteConfirmModal')"
+					class="px-4 py-3 border border-gray-200 rounded-custom font-semibold hover:bg-gray-100 transition-colors">Annulla</button>
+				<button id="confirmDeleteBtn"
+					class="btn-primary bg-red-600 hover:bg-red-700 justify-center font-bold">Sì, Elimina</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+	document.addEventListener("DOMContentLoaded", () => {
+		caricaTavola();
+		lucide.createIcons();
+
+		// Close dropdowns when clicking outside
+		document.addEventListener("click", (e) => {
+			if (!e.target.closest(".menu-dropdown-container")) {
+				document.querySelectorAll(".menu-dropdown-menu").forEach(m => m.classList.add("hidden"));
+			}
+		});
+	});
+
+	let activeSettimanaId = null;
+
+	async function caricaTavola() {
+		try {
+			// Carichiamo prima la config attiva
+			const cfgRes = await fetch("/activeConfig");
+			const cfgData = await cfgRes.json();
+			console.log("trovato: "+ JSON.stringify(cfgData));
+			activeSettimanaId = cfgData._id;
+			renderPiattoDelGiorno(cfgData);
+		} catch (e) { }
+
+		try {
+			const response = await fetch("/getAllMenu", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ action: 'load' })
+			});
+			if (response.ok) {
+				const mens = await response.json();
+				renderMenus(mens);
+			}
+		} catch (err) { console.error(err); }
+	}
+
+	function renderMenus(menus) {
+		const container = document.getElementById("menusContainer");
+		container.innerHTML = "";
+
+		if (menus.length === 0) {
+			container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-20 text-neutral-secondary bg-white rounded-custom border border-dashed border-gray-200">
+                    <i data-lucide="calendar" class="w-16 h-16 mb-4 opacity-20"></i>
+                    <p class="text-lg font-medium">Nessun menu creato</p>
+                    <button onclick="showModal('menuModal')" class="mt-4 text-primary font-bold hover:underline">Inizia ora &rarr;</button>
+                </div>
+            `;
+			lucide.createIcons();
+			return;
+		}
+
+		const grid = document.createElement('div');
+		grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8";
+		container.appendChild(grid);
+
+		menus.forEach(menu => {
+			let stagioneIcon = "📅";
+			let stagioneColor = "bg-gray-100 text-gray-600";
+			switch (menu.Temperatura) {
+				case 1: stagioneIcon = "☀️"; stagioneColor = "bg-yellow-100 text-yellow-700"; break;
+				case 2: stagioneIcon = "❄️"; stagioneColor = "bg-blue-100 text-blue-700"; break;
+			}
+
+			const card = document.createElement("div");
+			card.className = "bg-white rounded-custom border border-gray-100 shadow-subtle overflow-hidden flex flex-col hover:shadow-lg transition-all border-t-4 border-t-primary";
+
+			let weeksHtml = "";
+			menu.Settimane.forEach((sett, idx) => {
+				const settVuota = eVuoto(sett);
+				weeksHtml += `
+                    <div class="group flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" 
+                         onclick="window.location.href='/piano/${sett._id}'">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center font-bold italic">W${idx + 1}</span>
+                            <span class="text-sm font-semibold text-neutral-text group-hover:text-primary transition-colors">${sett.Name}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                             <button onclick="event.stopPropagation(); showDaySelection('${sett._id}')" 
+                                    class="p-2 ${sett._id === activeSettimanaId ? 'text-primary bg-primary/10 shadow-sm' : 'text-neutral-secondary'} hover:text-primary transition-colors rounded-full hover:bg-white border border-transparent hover:border-gray-100" 
+                                    title="Imposta come Attivo">
+                                <i data-lucide="pin" class="w-4 h-4 ${sett._id === activeSettimanaId ? 'fill-primary/20' : ''}"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); window.location.href='/listaSpesa/${sett._id}'" 
+                                    class="p-2 text-neutral-secondary hover:text-primary transition-colors rounded-full hover:bg-white border border-transparent hover:border-gray-100" 
+                                    title="Lista Spesa">
+                                <i data-lucide="${settVuota ? 'slash' : 'shopping-cart'}" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+			});
+
+			card.innerHTML = `
+                <div class="p-6 pb-4 flex items-center justify-between border-b border-gray-50">
+                    <div>
+                        <h3 class="font-bold text-xl text-neutral-text">${menu.Name}</h3>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="px-2 py-0.5 ${stagioneColor} rounded-full text-[10px] font-bold uppercase tracking-wider">${stagioneIcon} ${getStagioneLabel(menu.Temperatura)}</span>
+                        </div>
+                    </div>
+                    <div class="relative menu-dropdown-container">
+                        <button class="p-2 text-gray-300 hover:text-primary transition-colors dropdown-toggle">
+                            <i data-lucide="more-vertical"></i>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-custom shadow-xl border border-gray-100 hidden z-10 overflow-hidden menu-dropdown-menu">
+                            <button onclick="addWeek('${menu._id}')" class="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-neutral-text hover:bg-gray-50 transition-colors font-semibold border-b border-gray-50">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Aggiungi Settimana
+                            </button>
+                            <button onclick="showDeleteConfirm('${menu._id}')" class="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 transition-colors font-semibold">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                Elimina Menu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 space-y-1">
+                    ${weeksHtml}
+                </div>
+                <div class="mt-auto p-4 bg-gray-50/50 border-t border-gray-50 flex justify-center">
+                    <button onclick="window.location.href='/piano/${menu.Settimane[0]._id}'" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                        Gestisci tutto <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                    </button>
+                </div>
+            `;
+			grid.appendChild(card);
+		});
+
+		// Setup dropdown toggles
+		document.querySelectorAll(".dropdown-toggle").forEach(btn => {
+			btn.onclick = (e) => {
+				e.stopPropagation();
+				const menu = btn.nextElementSibling;
+				const isOpen = !menu.classList.contains("hidden");
+				document.querySelectorAll(".menu-dropdown-menu").forEach(m => m.classList.add("hidden"));
+				if (!isOpen) menu.classList.remove("hidden");
+			};
+		});
+
+		lucide.createIcons();
+	}
+
+	function getStagioneLabel(temp) {
+		if (temp == 1) return "Estate";
+		if (temp == 2) return "Inverno";
+		return "Ogni Stagione";
+	}
+
+	document.getElementById("submitButton").onclick = async (e) => {
+		e.preventDefault();
+		const btn = e.currentTarget;
+		let titolo = document.getElementById("Titolo").value.trim();
+
+		if (titolo === "") {
+			const adjectives = ["Delizioso", "Saporito", "Speciale", "dello Chef", "Rapido"];
+			const nouns = ["Pranzo", "Piatto", "Menu", "Banchetto", "Gusto"];
+			titolo = `${nouns[Math.floor(Math.random() * nouns.length)]} ${adjectives[Math.floor(Math.random() * adjectives.length)]}`;
+		}
+
+		const Temperatura = (document.getElementById("Temperatura1").checked ? 1 : 0) +
+			(document.getElementById("Temperatura2").checked ? 2 : 0);
+
+		try {
+			const response = await fetch("/insertMenu", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ Name: titolo, Temperatura: Temperatura })
+			});
+			if (response.ok) {
+				const updated = await response.json();
+				renderMenus(updated);
+				hideModal('menuModal');
+				document.getElementById("newMenuForm").reset();
+			}
+		} catch (err) { console.error(err); }
+	};
+
+	async function addWeek(menuId) {
+		try {
+			const response = await fetch("/aggiungiSettimana", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ id: menuId })
+			});
+			if (response.ok) {
+				const updated = await response.json();
+				renderMenus(updated);
+				document.querySelectorAll(".menu-dropdown-menu").forEach(m => m.classList.add("hidden"));
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
+	let menuIdToDelete = null;
+
+	function showDeleteConfirm(id) {
+		menuIdToDelete = id;
+		showModal('deleteConfirmModal');
+		document.querySelectorAll(".menu-dropdown-menu").forEach(m => m.classList.add("hidden"));
+	}
+
+	const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+	if (confirmDeleteBtn) {
+		confirmDeleteBtn.onclick = async () => {
+			if (!menuIdToDelete) return;
+
+			try {
+				const response = await fetch("/eliminaMenu", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ id: menuIdToDelete })
+				});
+				if (response.ok) {
+					const updated = await response.json();
+					renderMenus(updated);
+					hideModal('deleteConfirmModal');
+				}
+			} catch (err) {
+				console.error(err);
+			} finally {
+				menuIdToDelete = null;
+			}
+		};
+	}
+
+	document.getElementById("DROPButton").onclick = async () => {
+		if (!confirm("ATTENZIONE: Eliminare TUTTI i menu? Questa azione è irreversibile.")) return;
+		try {
+			const response = await fetch("/DELETETUTTOmen", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ confirm: true })
+			});
+			if (response.ok) {
+				renderMenus(await response.json());
+			}
+		} catch (err) { console.error(err); }
+	};
+
+	function eVuoto(settimana) {
+		if (!settimana || !settimana.Giorni) return true;
+		return !settimana.Giorni.some(g => g.Pranzo || g.Cena);
+	}
+
+	function renderPiattoDelGiorno(data) {
+		if (data) {
+			document.getElementById("piattoDelGiornoContainer").classList.remove("hidden");
+			document.getElementById("activeMenuInfo").innerText = data.Settimana.Name;
+			document.getElementById("currentDayBadge").innerText = `Bla bla bla bla bla!!!`;
+			document.getElementById("pranzoName").innerText = data.Pranzo?.Name || "Non previsto";
+			document.getElementById("cenaName").innerText = data.Cena?.Name || "Non previsto";
+		} else {
+			document.getElementById("piattoDelGiornoContainer").classList.add("hidden");
+		}
+		lucide.createIcons();
+	}
+
+	let selectedSettimanaId = null;
+	function showDaySelection(id) {
+		selectedSettimanaId = id;
+		showModal("daySelectionModal");
+	}
+
+	async function selectStartDay(day) {
+		console.log("scelgo giorno "+day);
+		if (!selectedSettimanaId) return;
+
+		try {
+			const response = await fetch("/setActiveConfig", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ settimanaId: selectedSettimanaId, startDayIndex: day })
+			});
+			if (response.ok) {
+				hideModal("daySelectionModal");
+				caricaTavola(); // Refresh both table and piatto del giorno box
+			}
+		} catch (err) { console.error(err); }
+	}
+</script>

@@ -1,0 +1,354 @@
+<div class="max-w-5xl mx-auto py-4">
+	<!-- Top Header / Bar -->
+	<header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+		<div class="flex-1">
+			<div class="flex items-center gap-4">
+				<a href="/ricette" id="back-btn"
+					class="p-2 bg-white rounded-full shadow-subtle text-primary hover:bg-primary hover:text-white transition-all">
+					<i data-lucide="chevron-left" class="w-5 h-5"></i>
+				</a>
+				<input type="text" id="nomeRicettaInput" placeholder="Nome della ricetta..."
+					class="text-3xl md:text-4xl font-black text-neutral-text bg-transparent border-b-2 border-transparent focus:border-primary focus:outline-none w-full transition-all px-0">
+				<script>
+					// Hide back button if in modal mode
+					if (window.location.search.includes('modal=true')) {
+						document.getElementById('back-btn').style.display = 'none';
+					}
+				</script>
+				<span id="nomeRicettaBadge"
+					class="hidden shrink-0 bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">🧪
+					In Prova</span>
+			</div>
+			<p class="text-neutral-secondary mt-2 flex items-center gap-2">
+				<i data-lucide="chef-hat" class="w-4 h-4"></i>
+				Gestione ingredienti e preparazione
+			</p>
+		</div>
+		<div class="flex items-center gap-3">
+			<button id="DROPButton" class="p-3 bg-red-50 text-red-500 rounded-custom hover:bg-red-100 transition-colors"
+				title="Elimina Ricetta">
+				<i data-lucide="trash-2" class="w-5 h-5"></i>
+			</button>
+			<button id="submitButton" class="btn-primary py-3 px-8 text-lg font-bold shadow-lg shadow-primary/20">
+				<i data-lucide="save" class="w-5 h-5"></i>
+				Salva
+			</button>
+		</div>
+	</header>
+
+	<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+		<!-- Main: Ingredients -->
+		<div class="lg:col-span-7 space-y-6">
+			<div class="bg-white rounded-custom shadow-subtle border border-gray-100 overflow-hidden">
+				<div class="p-6 border-b border-gray-50 flex items-center justify-between">
+					<div class="flex items-center gap-3">
+						<i data-lucide="shopping-basket" class="text-primary"></i>
+						<h2 class="text-lg font-bold text-neutral-text tracking-tight">Ingredienti</h2>
+					</div>
+					<span id="ingredienti-count"
+						class="text-xs font-bold text-neutral-secondary bg-gray-100 px-3 py-1 rounded-full">0
+						ingredienti</span>
+				</div>
+
+				<div class="p-6 space-y-6">
+					<!-- Add Box -->
+					<div class="relative group">
+						<div
+							class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-primary transition-colors">
+							<i data-lucide="search" class="w-5 h-5"></i>
+						</div>
+						<input type="text" id="ingrediente-display" list="lista-ingredienti-datalist"
+							placeholder="Cerca o aggiungi ingrediente..."
+							class="w-full pl-12 pr-12 py-4 bg-gray-50 border border-gray-100 rounded-custom focus:outline-none focus:ring-4 focus:ring-primary/10 focus:bg-white focus:border-primary transition-all text-neutral-text font-medium">
+						<button id="add-ingrediente"
+							class="absolute right-2 top-2 bottom-2 bg-primary text-white px-4 rounded-xl hover:bg-primary-dark transition-all">
+							<i data-lucide="plus" class="w-5 h-5"></i>
+						</button>
+						<datalist id="lista-ingredienti-datalist"></datalist>
+					</div>
+
+					<!-- Ingredients List -->
+					<div id="ingredients-list-container" class="space-y-2">
+						<!-- Rendered via JS -->
+					</div>
+
+					<div id="no-ingredients-msg"
+						class="hidden flex flex-col items-center justify-center py-12 text-neutral-secondary border-2 border-dashed border-gray-100 rounded-xl bg-gray-50/30">
+						<i data-lucide="salad" class="w-12 h-12 mb-4 opacity-20"></i>
+						<p class="font-medium text-sm italic">Nessun ingrediente ancora aggiunto...</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Sidebar: Settings -->
+		<div class="lg:col-span-5 space-y-8">
+			<!-- Toggles Card -->
+			<div class="bg-white rounded-custom shadow-subtle border border-gray-100 p-6 space-y-8">
+				<div class="space-y-4">
+					<label
+						class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+						<i data-lucide="thermometer" class="w-3 h-3"></i> Stagionalità
+					</label>
+					<div class="grid grid-cols-2 gap-3">
+						<label class="checkbox-toggle group">
+							<input type="checkbox" id="Temperatura1" class="sr-only" onchange="savePartial()">
+							<div
+								class="toggle-box flex items-center justify-center py-4 border-2 border-gray-100 rounded-xl text-sm font-bold text-neutral-secondary bg-gray-50 cursor-pointer hover:border-primary/20 hover:bg-white transition-all duration-200">
+								☀️ Estate</div>
+						</label>
+						<label class="checkbox-toggle group">
+							<input type="checkbox" id="Temperatura2" class="sr-only" onchange="savePartial()">
+							<div
+								class="toggle-box flex items-center justify-center py-4 border-2 border-gray-100 rounded-xl text-sm font-bold text-neutral-secondary bg-gray-50 cursor-pointer hover:border-primary/20 hover:bg-white transition-all duration-200">
+								❄️ Inverno</div>
+						</label>
+					</div>
+				</div>
+
+				<div class="space-y-4">
+					<label
+						class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+						<i data-lucide="clock" class="w-3 h-3"></i> Orario Consigliato
+					</label>
+					<div class="grid grid-cols-2 gap-3">
+						<label class="checkbox-toggle group">
+							<input type="checkbox" id="Orario1" class="sr-only" onchange="savePartial()">
+							<div
+								class="toggle-box flex items-center justify-center py-4 border-2 border-gray-100 rounded-xl text-sm font-bold text-neutral-secondary bg-gray-50 cursor-pointer hover:border-primary/20 hover:bg-white transition-all duration-200">
+								🌞 Pranzo</div>
+						</label>
+						<label class="checkbox-toggle group">
+							<input type="checkbox" id="Orario2" class="sr-only" onchange="savePartial()">
+							<div
+								class="toggle-box flex items-center justify-center py-4 border-2 border-gray-100 rounded-xl text-sm font-bold text-neutral-secondary bg-gray-50 cursor-pointer hover:border-primary/20 hover:bg-white transition-all duration-200">
+								🌙 Cena</div>
+						</label>
+					</div>
+				</div>
+
+				<div class="pt-6 border-t border-gray-50">
+					<label class="flex items-center justify-between cursor-pointer group">
+						<div class="flex items-center gap-3">
+							<div
+								class="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center group-hover:bg-orange-100 transition-colors">
+								<i data-lucide="beaker"></i>
+							</div>
+							<div>
+								<p class="text-sm font-bold text-neutral-text">In Prova</p>
+								<p class="text-[10px] text-neutral-secondary">Marca come ricetta sperimentale</p>
+							</div>
+						</div>
+						<input type="checkbox" id="inProva" onchange="savePartial()"
+							class="w-6 h-6 rounded-lg accent-orange-500">
+					</label>
+				</div>
+			</div>
+
+			<!-- Notes Card -->
+			<div class="bg-white rounded-custom shadow-subtle border border-gray-100 overflow-hidden">
+				<div class="p-6 border-b border-gray-50 flex items-center gap-3">
+					<i data-lucide="pen-tool" class="text-primary"></i>
+					<h2 class="text-lg font-bold text-neutral-text tracking-tight">Preparazione</h2>
+				</div>
+				<div class="p-2 bg-gray-50/30">
+					<textarea id="note-display" rows="12"
+						class="w-full bg-transparent p-4 focus:outline-none text-neutral-text leading-relaxed font-medium placeholder:italic placeholder:text-gray-300 resize-none"
+						placeholder="Inserisci qui i passaggi per la preparazione..."></textarea>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	/* Standard CSS for checked state - most reliable across environments */
+	.checkbox-toggle input:checked+.toggle-box {
+		background-color: #8322B0 !important;
+		color: white !important;
+		border-color: #8322B0 !important;
+		box-shadow: 0 10px 15px -3px rgba(131, 34, 176, 0.3) !important;
+		transform: translateY(-2px);
+	}
+</style>
+
+<script>
+	let QuestaRicetta = {};
+	let ingredientiMap = {};
+	let _idd = "";
+
+	document.addEventListener("DOMContentLoaded", () => {
+		const url = window.location.pathname;
+		const segments = url.split('/');
+		_idd = segments.pop();
+
+		init();
+	});
+
+	async function init() {
+		await populateIngredientsDropdown();
+		await caricaTavola(_idd);
+		lucide.createIcons();
+	}
+
+	async function populateIngredientsDropdown() {
+		try {
+			const response = await fetch('/ingred');
+			if (response.ok) {
+				const ingredienti = await response.json();
+				const dataList = document.getElementById("lista-ingredienti-datalist");
+				ingredienti.forEach(ing => {
+					const opt = document.createElement("option");
+					opt.value = ing.Name;
+					dataList.appendChild(opt);
+					ingredientiMap[ing.Name] = ing._id;
+				});
+			}
+		} catch (e) { }
+	}
+
+	async function caricaTavola(id) {
+		try {
+			const res = await fetch("/NomeRic", {
+				method: "POST",
+				body: JSON.stringify({ Id: id }),
+				headers: { "Content-Type": "application/json" }
+			});
+			if (res.ok) {
+				QuestaRicetta = await res.json();
+				renderRicetta(QuestaRicetta);
+			}
+		} catch (e) { }
+	}
+
+	async function renderRicetta(recipe) {
+		console.log("Rendering ricetta:", recipe.Name, "Temp:", recipe.Temperatura, "Orario:", recipe.Orario);
+		document.getElementById("nomeRicettaInput").value = recipe.Name;
+		document.getElementById("note-display").value = recipe.Note || "";
+		document.getElementById("nomeRicettaBadge").classList.toggle('hidden', !recipe.Prova);
+
+		// Set checked state without triggering onchange to avoid loop
+		const t1 = document.getElementById('Temperatura1');
+		const t2 = document.getElementById('Temperatura2');
+		const o1 = document.getElementById('Orario1');
+		const o2 = document.getElementById('Orario2');
+		const pr = document.getElementById("inProva");
+
+		t1.checked = (recipe.Temperatura == 1 || recipe.Temperatura == 3);
+		t2.checked = (recipe.Temperatura == 2 || recipe.Temperatura == 3);
+		o1.checked = (recipe.Orario == 1 || recipe.Orario == 3);
+		o2.checked = (recipe.Orario == 2 || recipe.Orario == 3);
+		pr.checked = !!recipe.Prova;
+
+		console.log("Checkboxes states updated:", {
+			Estate: t1.checked,
+			Inverno: t2.checked,
+			Pranzo: o1.checked,
+			Cena: o2.checked,
+			Prova: pr.checked
+		});
+
+		// Ingredients List
+		const container = document.getElementById("ingredients-list-container");
+		const countBadge = document.getElementById("ingredienti-count");
+		const emptyMsg = document.getElementById("no-ingredients-msg");
+
+		container.innerHTML = "";
+		const ingCount = recipe.Ingredienti ? recipe.Ingredienti.length : 0;
+		countBadge.textContent = `${ingCount} ${ingCount === 1 ? 'ingrediente' : 'ingredienti'}`;
+		emptyMsg.classList.toggle('hidden', ingCount > 0);
+
+		for (const ingID of (recipe.Ingredienti || [])) {
+			const name = await getIngName(ingID);
+			const item = document.createElement("div");
+			item.className = "flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:border-primary/20 hover:shadow-sm transition-all animate-in fade-in slide-in-from-left-2 duration-300";
+			item.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-primary group">
+                        <i data-lucide="check" class="w-4 h-4 opacity-50"></i>
+                    </div>
+                    <span class="font-semibold text-neutral-text">${name}</span>
+                </div>
+                <button class="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors remove-btn" data-id="${ingID}">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            `;
+			item.querySelector('.remove-btn').onclick = (e) => removeIngrediente(ingID);
+			container.appendChild(item);
+		}
+		lucide.createIcons();
+	}
+
+	async function addIngrediente() {
+		const input = document.getElementById("ingrediente-display");
+		const val = input.value.trim();
+		if (!val) return;
+
+		const ingID = ingredientiMap[val] || val;
+		const currentIngs = QuestaRicetta.Ingredienti || [];
+		if (currentIngs.includes(ingID)) return;
+
+		const updatedIngs = [...currentIngs, ingID];
+		await savePartial({ Ingredienti: updatedIngs });
+		input.value = "";
+	}
+
+	async function removeIngrediente(ingID) {
+		const updatedIngs = (QuestaRicetta.Ingredienti || []).filter(id => id !== ingID);
+		await savePartial({ Ingredienti: updatedIngs });
+	}
+
+	async function savePartial(extraData = {}) {
+		// Small delay to let the UI update visually before the "flash" of re-rendering
+		setTimeout(async () => {
+			const payload = {
+				Id: _idd,
+				Name: document.getElementById("nomeRicettaInput").value.trim(),
+				Note: document.getElementById("note-display").value,
+				Prova: document.getElementById("inProva").checked,
+				Temperatura: (document.getElementById('Temperatura1').checked ? 1 : 0) + (document.getElementById('Temperatura2').checked ? 2 : 0),
+				Orario: (document.getElementById('Orario1').checked ? 1 : 0) + (document.getElementById('Orario2').checked ? 2 : 0),
+				Ingredienti: QuestaRicetta.Ingredienti,
+				...extraData
+			};
+
+			const res = await fetch("/MODricetta", {
+				method: "POST",
+				body: JSON.stringify(payload),
+				headers: { "Content-Type": "application/json" }
+			});
+			if (res.ok) {
+				const updated = await res.json();
+				QuestaRicetta = updated;
+				// Instead of full re-render of everything, just update the data-driven parts
+				// but keep it simple for now, at least update the local object
+				renderRicetta(updated);
+			}
+		}, 50);
+	}
+
+	document.getElementById("add-ingrediente").onclick = addIngrediente;
+	document.getElementById("submitButton").onclick = () => savePartial().then(() => alert("Salvato!"));
+	document.getElementById("DROPButton").onclick = async () => {
+		if (!confirm("Eliminare questa ricetta definitivamente?")) return;
+		const res = await fetch("/DELETERicetta", {
+			method: "POST",
+			body: JSON.stringify({ Name: QuestaRicetta.Name }),
+			headers: { "Content-Type": "application/json" }
+		});
+		if (res.ok) window.location.href = '/ricette';
+	};
+
+	async function getIngName(id) {
+		const res = await fetch("/NomeIngr", {
+			method: "POST",
+			body: JSON.stringify({ Id: id }),
+			headers: { "Content-Type": "application/json" }
+		});
+		if (res.ok) {
+			const ing = await res.json();
+			return ing ? ing.Name : "N/A";
+		}
+		return "N/A";
+	}
+</script>

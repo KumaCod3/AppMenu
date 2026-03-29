@@ -1,0 +1,571 @@
+<!-- Header & Actions -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+	<div>
+		<h1 class="text-3xl font-bold text-neutral-text">Le Ricette</h1>
+		<p class="text-neutral-secondary">Gestisci e organizza le tue ricette preferite</p>
+	</div>
+	<div class="flex flex-wrap gap-3">
+		<button id="fresh" class="btn-secondary">
+			<i data-lucide="refresh-cw" class="w-4 h-4"></i>
+			Refresh
+		</button>
+		<button id="openModalBtn" onclick="showModal('recipeModal')" class="btn-primary">
+			<i data-lucide="plus" class="w-4 h-4"></i>
+			Nuova Ricetta
+		</button>
+	</div>
+</div>
+
+<!-- Search & Filters Container -->
+<div class="flex flex-col xl:flex-row xl:items-center gap-8 mb-8">
+	<!-- Search Section -->
+	<div class="relative flex-1 max-w-2xl group">
+		<div
+			class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-secondary group-focus-within:text-primary transition-colors">
+			<i data-lucide="search" class="w-5 h-5"></i>
+		</div>
+		<input type="text" id="recipe-search-input" placeholder="Cerca tra le tue ricette..."
+			class="w-full pl-12 pr-16 py-4 bg-white border border-gray-100 rounded-custom shadow-subtle focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all text-lg font-medium"
+			autocomplete="off">
+
+		<!-- Recipe Counter -->
+		<div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+			<span id="stats-total" class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">0</span>
+		</div>
+
+		<!-- Suggestions Dropdown -->
+		<div id="search-suggestions"
+			class="absolute z-30 left-0 right-0 mt-2 bg-white rounded-custom shadow-xl border border-gray-100 overflow-hidden hidden animate-in fade-in slide-in-from-top-2 duration-200">
+			<!-- Suggestions rendered here -->
+		</div>
+	</div>
+
+	<!-- Filters Column -->
+	<div class="flex flex-wrap items-center gap-x-8 gap-y-4">
+		<!-- Status Group -->
+		<div class="flex items-center gap-4">
+			<span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Stato</span>
+			<div class="flex items-center gap-2">
+				<button
+					class="filter-dot group w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 shadow-sm transition-all"
+					data-category="status" data-value="used" title="Usate">
+					<i data-lucide="lock"
+						class="w-4 h-4 text-gray-400 group-[.active]:text-white transition-colors"></i>
+				</button>
+				<button
+					class="filter-dot group w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 shadow-sm transition-all"
+					data-category="status" data-value="unused" title="Non Usate">
+					<i data-lucide="check"
+						class="w-4 h-4 text-gray-400 group-[.active]:text-white transition-colors"></i>
+				</button>
+			</div>
+		</div>
+
+		<div class="hidden xl:block h-6 w-px bg-gray-200"></div>
+
+		<!-- Season Group -->
+		<div class="flex items-center gap-4">
+			<span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Stagione</span>
+			<div class="flex items-center gap-2">
+				<button
+					class="filter-dot group w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 shadow-sm transition-all"
+					data-category="season" data-value="summer" title="Estate">
+					<i data-lucide="sun" class="w-4 h-4 text-gray-400 group-[.active]:text-white transition-colors"></i>
+				</button>
+				<button
+					class="filter-dot group w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 shadow-sm transition-all"
+					data-category="season" data-value="winter" title="Inverno">
+					<i data-lucide="snowflake"
+						class="w-4 h-4 text-gray-400 group-[.active]:text-white transition-colors"></i>
+				</button>
+			</div>
+		</div>
+
+		<div class="hidden xl:block h-6 w-px bg-gray-200"></div>
+
+		<!-- Meal Group -->
+		<div class="flex items-center gap-4">
+			<span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pasto</span>
+			<div class="flex items-center gap-2">
+				<button
+					class="filter-dot group w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 shadow-sm transition-all"
+					data-category="meal" data-value="lunch" title="Pranzo">
+					<i data-lucide="utensils"
+						class="w-4 h-4 text-gray-400 group-[.active]:text-white transition-colors"></i>
+				</button>
+				<button
+					class="filter-dot group w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-100 shadow-sm transition-all"
+					data-category="meal" data-value="dinner" title="Cena">
+					<i data-lucide="moon"
+						class="w-4 h-4 text-gray-400 group-[.active]:text-white transition-colors"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Stats Area removed - counter moved to search bar -->
+
+<!-- Main Grid Section -->
+<div id="recipes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+	<!-- Target for JS rendering -->
+</div>
+
+<!-- Loading State Container -->
+<div id="loading-state" class="hidden flex flex-col items-center justify-center py-20 text-neutral-secondary">
+	<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+	<p>Caricamento ricette...</p>
+</div>
+
+<!-- Empty State Container -->
+<div id="empty-state"
+	class="hidden flex flex-col items-center justify-center py-20 text-neutral-secondary bg-white rounded-custom border-2 border-dashed border-gray-200">
+	<i data-lucide="utensils" class="w-16 h-16 mb-4 opacity-20"></i>
+	<p class="text-lg font-medium">Nessuna ricetta trovata</p>
+	<p class="text-sm">Inizia aggiungendo la tua prima ricetta dal pulsante in alto.</p>
+</div>
+
+<!-- Add/Edit Modal (Slide-over approach) -->
+<div id="recipeModal" class="fixed inset-0 z-50 hidden transition-all duration-300">
+	<div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onclick="hideModal('recipeModal')">
+	</div>
+	<div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300"
+		id="recipeEditContainer">
+		<div class="p-6 border-b border-gray-100 flex items-center justify-between bg-primary text-white">
+			<div class="flex items-center gap-3">
+				<i data-lucide="plus-circle"></i>
+				<h2 class="text-xl font-bold">Nuova Ricetta</h2>
+			</div>
+			<button onclick="hideModal('recipeModal')" class="p-2 hover:bg-white/20 rounded-full transition-colors">
+				<i data-lucide="x"></i>
+			</button>
+		</div>
+
+		<form id="newRecipeForm" class="flex-1 overflow-y-auto p-6 space-y-6">
+			<div class="space-y-1">
+				<label class="text-sm font-semibold text-neutral-secondary">Nome Ricetta</label>
+				<input type="text" name="Name" id="Name" required placeholder="Es. Pasta alla Carbonara"
+					class="w-full px-4 py-2 border border-gray-200 rounded-custom focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+			</div>
+
+			<div class="space-y-1">
+				<label class="text-sm font-semibold text-neutral-secondary">Ingredienti</label>
+				<div class="flex gap-2">
+					<input type="text" id="new-ingredient" placeholder="Cerca o aggiungi..."
+						class="flex-1 px-4 py-2 border border-gray-200 rounded-custom focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+					<button type="button" id="add-ingrediente-btn" class="btn-primary px-3">
+						<i data-lucide="plus" class="w-4 h-4"></i>
+					</button>
+				</div>
+				<div id="lista-ingredienti-chips"
+					class="flex flex-wrap gap-2 mt-3 min-h-[40px] p-2 bg-gray-50 rounded-custom border border-gray-100">
+					<!-- Chips go here -->
+				</div>
+			</div>
+
+			<div class="grid grid-cols-2 gap-4">
+				<div class="space-y-1">
+					<label class="text-sm font-semibold text-neutral-secondary">Stagione</label>
+					<select id="sel-temp"
+						class="w-full px-4 py-2 border border-gray-200 rounded-custom focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white">
+						<option value="0">Ogni Stagione</option>
+						<option value="1">Estate</option>
+						<option value="2">Inverno</option>
+					</select>
+				</div>
+				<div class="space-y-1">
+					<label class="text-sm font-semibold text-neutral-secondary">Pasto</label>
+					<select id="sel-orario"
+						class="w-full px-4 py-2 border border-gray-200 rounded-custom focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white">
+						<option value="0">Ogni Ora</option>
+						<option value="1">Pranzo</option>
+						<option value="2">Cena</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="space-y-1">
+				<label class="text-sm font-semibold text-neutral-secondary">Note / Procedimento</label>
+				<textarea id="val-nota" rows="4" placeholder="Passaggi della ricetta..."
+					class="w-full px-4 py-2 border border-gray-200 rounded-custom focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"></textarea>
+			</div>
+
+			<div class="flex items-center gap-3 p-4 bg-orange-50 rounded-custom border border-orange-100">
+				<input type="checkbox" id="check-prova" class="w-5 h-5 accent-orange-500 rounded border-gray-300">
+				<label for="check-prova" class="text-sm font-medium text-orange-800">Marca come "In Prova"</label>
+			</div>
+		</form>
+
+		<div class="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
+			<button onclick="hideModal('recipeModal')"
+				class="flex-1 px-4 py-3 border border-gray-200 rounded-custom font-semibold hover:bg-gray-100 transition-colors">Annulla</button>
+			<button id="saveRecipeBtn" class="flex-1 btn-primary justify-center font-bold">Salva Ricetta</button>
+		</div>
+	</div>
+</div>
+
+<style>
+	.filter-dot {
+		cursor: pointer;
+	}
+
+	.filter-dot:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+	}
+
+	/* Active States with category colors */
+	.filter-dot.active[data-value="used"] {
+		background-color: #22c55e !important;
+		border-color: #22c55e !important;
+	}
+
+	.filter-dot.active[data-value="unused"] {
+		background-color: #94a3b8 !important;
+		border-color: #94a3b8 !important;
+	}
+
+	.filter-dot.active[data-value="summer"] {
+		background-color: #eab308 !important;
+		border-color: #eab308 !important;
+	}
+
+	.filter-dot.active[data-value="winter"] {
+		background-color: #3b82f6 !important;
+		border-color: #3b82f6 !important;
+	}
+
+	.filter-dot.active[data-value="lunch"] {
+		background-color: #0d9488 !important;
+		border-color: #0d9488 !important;
+	}
+
+	.filter-dot.active[data-value="dinner"] {
+		background-color: #7e22ce !important;
+		border-color: #7e22ce !important;
+	}
+</style>
+
+<script>
+	let ingredientiSelected = [];
+	let ingredientiMap = {};
+	let allRecipes = []; // Global storage for search
+	let activeFilters = {
+		status: [],
+		season: [],
+		meal: []
+	};
+
+
+	document.addEventListener("DOMContentLoaded", async () => {
+		caricaTavola();
+		lucide.createIcons();
+
+		// Search & Filter Logic
+		const searchInput = document.getElementById("recipe-search-input");
+		const suggestionsBox = document.getElementById("search-suggestions");
+
+		function applyAllFilters() {
+			const query = searchInput.value.toLowerCase().trim();
+
+			const filtered = allRecipes.filter(r => {
+				// Text query
+				if (query && !r.Name.toLowerCase().includes(query)) return false;
+
+				// Status (OR within category)
+				if (activeFilters.status.length > 0) {
+					const isUsed = r.Menus && r.Menus.length > 0;
+					const matchesStatus = activeFilters.status.some(s =>
+						(s === 'used' && isUsed) || (s === 'unused' && !isUsed)
+					);
+					if (!matchesStatus) return false;
+				}
+
+				// Season (OR within category)
+				if (activeFilters.season.length > 0) {
+					const matchesSeason = activeFilters.season.some(s =>
+						(s === 'summer' && [1, 3, 0].includes(r.Temperatura)) ||
+						(s === 'winter' && [2, 3, 0].includes(r.Temperatura))
+					);
+					if (!matchesSeason) return false;
+				}
+
+				// Meal (OR within category)
+				if (activeFilters.meal.length > 0) {
+					const matchesMeal = activeFilters.meal.some(s =>
+						(s === 'lunch' && [1, 3].includes(r.Orario)) ||
+						(s === 'dinner' && [2, 3].includes(r.Orario))
+					);
+					if (!matchesMeal) return false;
+				}
+
+				return true;
+			});
+
+			renderRecipes(filtered);
+		}
+
+		// Filter Dots Event Listeners
+		document.querySelectorAll('.filter-dot').forEach(dot => {
+			dot.addEventListener('click', () => {
+				const cat = dot.dataset.category;
+				const val = dot.dataset.value;
+
+				if (dot.classList.contains('active')) {
+					dot.classList.remove('active');
+					activeFilters[cat] = activeFilters[cat].filter(v => v !== val);
+				} else {
+					dot.classList.add('active');
+					activeFilters[cat].push(val);
+				}
+				applyAllFilters();
+			});
+		});
+
+		searchInput.addEventListener("input", (e) => {
+			applyAllFilters();
+
+			const query = e.target.value.toLowerCase().trim();
+			if (!query) {
+				suggestionsBox.classList.add("hidden");
+				return;
+			}
+
+			// Render suggestions
+			const suggestions = allRecipes.filter(r => r.Name.toLowerCase().includes(query)).slice(0, 5);
+			if (suggestions.length > 0) {
+				suggestionsBox.innerHTML = suggestions.map(s => {
+					const regex = new RegExp(`(${query})`, 'gi');
+					const highlighted = s.Name.replace(regex, '<b class="text-primary">$1</b>');
+					return `
+						<div class="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0 flex items-center justify-between group suggestion-item" data-id="${s._id}">
+							<span class="text-neutral-text font-medium">${highlighted}</span>
+							<i data-lucide="arrow-right" class="w-4 h-4 text-gray-300 group-hover:text-primary transition-colors"></i>
+						</div>
+					`;
+				}).join('');
+				suggestionsBox.classList.remove("hidden");
+				lucide.createIcons();
+
+				// Add click listeners to suggestions
+				suggestionsBox.querySelectorAll('.suggestion-item').forEach(item => {
+					item.onclick = () => {
+						const id = item.dataset.id;
+						window.location.href = `/ricetta/${id}`;
+					};
+				});
+			} else {
+				suggestionsBox.classList.add("hidden");
+			}
+		});
+
+		// Close suggestions when clicking outside
+		document.addEventListener("click", (e) => {
+			if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+				suggestionsBox.classList.add("hidden");
+			}
+		});
+
+		// Fetch ingredient mapping
+		try {
+			const res = await fetch("/ingred");
+			const ingredienti = await res.json();
+			ingredienti.forEach(ing => {
+				ingredientiMap[ing.Name] = ing._id;
+			});
+		} catch (e) { console.error(e); }
+	});
+
+	async function caricaTavola() {
+		const grid = document.getElementById('recipes-grid');
+		const loading = document.getElementById('loading-state');
+		const empty = document.getElementById('empty-state');
+
+		grid.innerHTML = "";
+		loading.classList.remove('hidden');
+		empty.classList.add('hidden');
+
+		try {
+			const response = await fetch("/ricet", { method: "POST" });
+			if (response.ok) {
+				allRecipes = await response.json();
+				renderRecipes(allRecipes);
+			}
+		} catch (err) {
+			console.error("Errore caricamento:", err);
+		} finally {
+			loading.classList.add('hidden');
+		}
+	}
+
+	function renderRecipes(recipes) {
+		const grid = document.getElementById('recipes-grid');
+		const empty = document.getElementById('empty-state');
+
+		grid.innerHTML = ""; // Clear grid before rendering
+		empty.classList.add('hidden'); // Hide empty state by default
+
+		document.getElementById('stats-total').textContent = recipes.length;
+
+		if (recipes.length === 0) {
+			empty.classList.remove('hidden');
+			return;
+		}
+
+		recipes.forEach(recipe => {
+			const card = document.createElement('div');
+			card.className = "bg-white rounded-custom border border-gray-100 shadow-subtle overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col";
+			card.onclick = (e) => {
+				if (!e.target.closest('button')) window.location.href = `/ricetta/${recipe._id}`;
+			};
+
+			const seasonTag = recipe.Temperatura == 1 ? '☀️ Estate' : (recipe.Temperatura == 2 ? '❄️ Inverno' : '📅 Annuale');
+			const timeTag = recipe.Orario == 1 ? '🍽️ Pranzo' : (recipe.Orario == 2 ? '🌙 Cena' : '🕒 Ogni ora');
+
+			const ingredientsNames = (recipe.Ingredienti || []).map(ing => typeof ing === 'object' ? ing.Name : ing);
+			const truncatedIngs = ingredientsNames.join(", ").slice(0, 60) + (ingredientsNames.join(", ").length > 60 ? '...' : '');
+
+			// Generate detailed usage string: "MENU NAME - Settimana X"
+			const usageLabels = (recipe.Settimane || []).map(s => {
+				const menuName = (s.Menu && s.Menu.Name) ? s.Menu.Name.toUpperCase() : 'MENU';
+				const weekName = s.Name || 'Settimana';
+				return `${menuName} - ${weekName}`;
+			});
+			const usageText = usageLabels.join(", ");
+
+			card.innerHTML = `
+                <div class="h-32 bg-gradient-to-br from-primary/10 to-primary/5 p-4 flex flex-col justify-end relative">
+                    ${recipe.Prova ? '<span class="absolute top-3 right-3 px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full text-[10px] font-bold">IN PROVA</span>' : ''}
+                    <span class="text-[10px] font-bold text-primary uppercase tracking-wider opacity-60">${timeTag}</span>
+                    <h3 class="text-neutral-text text-lg font-bold leading-tight truncate">${recipe.Name}</h3>
+                </div>
+                <div class="p-5 flex-1 flex flex-col gap-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-xs font-medium text-neutral-secondary">
+                            <i data-lucide="calendar" class="w-3 h-3"></i>
+                            <span>${seasonTag}</span>
+                        </div>
+                        ${usageText ? `
+                        <div class="flex items-center gap-1 text-[9px] font-black text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-tighter" title="Usata in: ${usageText}">
+                            <i data-lucide="lock" class="w-2.5 h-2.5"></i>
+                            <span class="truncate max-w-[120px]">${usageText}</span>
+                        </div>` : ''}
+                    </div>
+                    <p class="text-sm text-neutral-secondary leading-relaxed flex-1 italic">
+                        ${truncatedIngs || 'Nessun ingrediente...'}
+                    </p>
+                    <div class="pt-4 border-t border-gray-50 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="text-[10px] text-gray-400 font-medium uppercase">Vedi dettagli</span>
+                        <div class="flex gap-1">
+                             <button onclick="event.stopPropagation(); window.location.href='/ricetta/${recipe._id}'" class="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                             <button onclick="eliminaRicetta(event, '${recipe.Name.replace(/'/g, "\\'")}')" class="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+			grid.appendChild(card);
+		});
+		lucide.createIcons();
+	}
+
+	async function eliminaRicetta(e, name) {
+		e.stopPropagation();
+		if (!confirm(`Vuoi eliminare definitivamente la ricetta "${name}"?`)) return;
+
+		try {
+			const response = await fetch("/DELETERicetta", {
+				method: "POST",
+				body: JSON.stringify({ Name: name }),
+				headers: { "Content-Type": "application/json" }
+			});
+			if (response.ok) {
+				caricaTavola();
+			}
+		} catch (err) {
+			console.error("Errore eliminazione:", err);
+		}
+	}
+
+	// Modal Ingredient logic
+	const inputIng = document.getElementById("new-ingredient");
+	const listIng = document.getElementById("lista-ingredienti-chips");
+
+	document.getElementById("add-ingrediente-btn").onclick = () => {
+		const val = inputIng.value.trim();
+		if (val) {
+			addIngredientChip(val);
+			inputIng.value = "";
+		}
+	};
+
+	inputIng.onkeypress = (e) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			document.getElementById("add-ingrediente-btn").click();
+		}
+	}
+
+	function addIngredientChip(name) {
+		if (ingredientiSelected.includes(name)) return;
+		const chip = document.createElement("div");
+		chip.className = "flex items-center gap-2 bg-primary/5 text-primary px-3 py-1 rounded-full text-xs font-semibold border border-primary/10 animate-in fade-in zoom-in duration-200";
+		chip.innerHTML = `
+            <span>${name}</span>
+            <button type="button" class="hover:text-primary-dark ml-1"><i data-lucide="x" class="w-3 h-3"></i></button>
+        `;
+		chip.querySelector('button').onclick = () => {
+			ingredientiSelected = ingredientiSelected.filter(i => i !== name);
+			chip.remove();
+		};
+		listIng.appendChild(chip);
+		ingredientiSelected.push(name);
+		lucide.createIcons();
+	}
+
+	// Form submission
+	document.getElementById("saveRecipeBtn").onclick = async (e) => {
+		e.preventDefault();
+		const btn = e.currentTarget;
+		const originalHtml = btn.innerHTML;
+
+		btn.disabled = true;
+		btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>';
+		lucide.createIcons();
+
+		// Convert selected names to IDs if they exist in map
+		const finalIngredients = ingredientiSelected.map(name => ingredientiMap[name] || name);
+
+		const recipeData = {
+			Name: document.getElementById("Name").value,
+			Ingredienti: finalIngredients,
+			Temperatura: parseInt(document.getElementById("sel-temp").value),
+			Orario: parseInt(document.getElementById("sel-orario").value),
+			Prova: document.getElementById("check-prova").checked,
+			Note: document.getElementById("val-nota").value
+		};
+
+		try {
+			const response = await fetch("/Nricetta", {
+				method: "POST",
+				body: JSON.stringify(recipeData),
+				headers: { "Content-Type": "application/json" }
+			});
+			if (response.ok) {
+				hideModal('recipeModal');
+				document.getElementById("newRecipeForm").reset();
+				listIng.innerHTML = "";
+				ingredientiSelected = [];
+				caricaTavola();
+			}
+		} catch (err) {
+			console.error(err);
+		} finally {
+			btn.disabled = false;
+			btn.innerHTML = originalHtml;
+			lucide.createIcons();
+		}
+	};
+
+	document.getElementById("fresh").onclick = () => caricaTavola();
+
+</script>

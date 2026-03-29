@@ -1,0 +1,141 @@
+<h2 class="display-4">Lista della spesa</h2>
+<h3 id="intestazione">Name</h3>
+<hr />
+<div id="lista-base">
+
+</div>
+<hr />
+<div id="lista-spesa">
+
+</div>
+<script>
+
+	const lista = ["Yogurt",
+					"Grana",
+					"Banane",
+					"Latte",
+					"Biscotti colazione",
+					"Frutta"];
+
+
+	document.addEventListener("DOMContentLoaded", (event) => {
+		const url = window.location.pathname;
+		const segments = url.split('/');
+		const id = segments.pop();
+		settimana = getSettimana(id);
+	});
+	var settimana = {};
+	var listaSpesa = [];
+
+	function scaricaLista(data) {
+		console.log("Scarico lista di: " + data.Name);
+
+		var lista = [];
+		if (data.Giorni && Array.isArray(data.Giorni)) {
+			data.Giorni.forEach(giorno => {
+				console.log("controllo giorno: " + JSON.stringify(giorno));
+				if (giorno.Pranzo && giorno.Pranzo.Name) {
+					giorno.Pranzo.Ingredienti.forEach(ingred => {
+						console.log("aggiungo pranzo: " + ingred.Name);
+						lista.push(ingred.Name);
+					});
+				}
+				if (giorno.Cena && giorno.Cena.Name) {
+					giorno.Cena.Ingredienti.forEach(ingred => {
+						console.log("aggiungo cena: " + ingred.Name);
+						lista.push(ingred.Name);
+					});
+				}
+			});
+		}
+
+		const listaConta = contaRipetizioni(lista);
+		console.log("ecco la lista: " + listaConta);
+		popolaLista(listaConta);
+		
+		return listaConta;
+	}
+
+	async function getSettimana(id) {
+		try {
+			const recipeData = {
+				iddi: id,
+			};
+			const fetchConfigData = {
+				method: "POST",
+				body: JSON.stringify(recipeData),
+				headers: { "Content-Type": "application/json" }
+			};
+
+			const response = await fetch("/loadSettimana", fetchConfigData);
+			if (response.ok) {
+				const sett = await response.json()
+				var div = document.getElementById("intestazione");
+				div.innerHTML = div.innerHTML.replace("Name", `${sett.Name}`);
+				listaSpesa = scaricaLista(sett);
+
+				return sett;
+			} else {
+				console.log("Error with the response data");
+			}
+		} catch (err) {
+			console.log(`Error: ${err}`);
+		}
+	}
+
+	function contaRipetizioni(arrayIniziale) {
+		const conteggio = {};
+		arrayIniziale.forEach(str => {
+			conteggio[str] = (conteggio[str] || 0) + 1;
+		});
+
+		const arrayFinale = [];
+		for (const [str, count] of Object.entries(conteggio)) {
+			if (count > 1) {
+				arrayFinale.push(`${str}  X  ${count}`);
+			} else {
+				arrayFinale.push(str);
+			}
+		}
+		return arrayFinale.sort();
+	}
+
+	function popolaLista(array) {
+		const contenito = document.getElementById("lista-base");
+		contenito.innerHTML = '';
+
+		lista.forEach((elemento, indice) => {
+			const rigaHtml = `
+			<div class="form-check mb-3 d-flex align-items-center">
+				<input class="form-check-input" type="checkbox" value="" id="itemb-${indice}" 
+					   style="width: 20px; height: 20px; margin-top: 0;">
+				
+				<label class="form-check-label h4 ml-3" for="item-${indice}" style="margin-bottom: 0;">
+					${elemento}
+				</label>
+			</div>
+		`;
+
+			contenito.innerHTML += rigaHtml;
+		});
+		
+		const contenitore = document.getElementById('lista-spesa');
+		contenitore.innerHTML = '';
+
+		array.forEach((elemento, indice) => {
+			const rigaHtml = `
+			<div class="form-check mb-3 d-flex align-items-center">
+				<input class="form-check-input" type="checkbox" value="" id="item-${indice}" 
+					   style="width: 20px; height: 20px; margin-top: 0;">
+				
+				<label class="form-check-label h4 ml-3" for="item-${indice}" style="margin-bottom: 0;">
+					${elemento}
+				</label>
+			</div>
+		`;
+
+			contenitore.innerHTML += rigaHtml;
+		});
+	}
+
+</script>

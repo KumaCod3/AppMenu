@@ -1,0 +1,28 @@
+
+1
+Pranzo: Cavolo saltato con Crema di Ceci --aggiungere all'app
+Cena: Pasta zucchini e Avocado
+
+2
+Pranzo: Pasta al pesto
+Cena: Pizza
+
+3
+Pranzo: Pasta con Ragù di Lenticchie
+Cena: Cereali con Tempeh
+
+4
+Pranzo: Pasta con pesto di rucola (spalmabile + rucola) --aggiungere in APP
+Cena: Pasta burro d’arachidi e ceci
+
+5
+Pranzo: Pasta Carbonara e Zucchini
+Cena: Risotto con Funghi
+
+6
+Pranzo: Polpettone Veg
+Cena: Pasta crema di rapa e zola // radicchio e zola
+
+7
+Pranzo: Pasta Tonno e Cipolle
+Cena: Rosti con uova e verdura

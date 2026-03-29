@@ -1,0 +1,181 @@
+<!-- Header & Actions -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+	<div>
+		<h1 class="text-3xl font-bold text-neutral-text">🥕 Gli Ingredienti</h1>
+		<p class="text-neutral-secondary">Gestisci il catalogo e i prezzi degli ingredienti</p>
+	</div>
+	<div class="flex flex-wrap gap-3">
+		<button onclick="showModal('ingredientModal')" class="btn-primary">
+			<i data-lucide="plus" class="w-4 h-4"></i>
+			Nuovo Ingrediente
+		</button>
+	</div>
+</div>
+
+<!-- Stats Area -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+	<div class="bg-white p-6 rounded-custom shadow-subtle border border-gray-100 flex items-center gap-4">
+		<div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center">
+			<i data-lucide="shopping-basket"></i>
+		</div>
+		<div>
+			<p class="text-sm text-neutral-secondary">Ingredienti in Database</p>
+			<p class="text-2xl font-bold text-neutral-text" id="stats-total-ing">0</p>
+		</div>
+	</div>
+</div>
+
+<!-- Main Section: Grid of Ingredients -->
+<div id="ingredients-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+	{{#each legends}}
+	<div class="ingredient-card bg-white p-4 rounded-custom border border-gray-100 shadow-subtle hover:shadow-md transition-all group flex items-center justify-between cursor-pointer"
+		data-name="{{this/Name}}">
+		<div class="flex items-center gap-3">
+			<div
+				class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+				<i data-lucide="carrot"
+					class="w-5 h-5 text-neutral-secondary group-hover:text-primary transition-colors"></i>
+			</div>
+			<div>
+				<p class="font-bold text-neutral-text group-hover:text-primary transition-colors">{{this/Name}}</p>
+				<p class="text-xs font-semibold text-primary">{{this/Price}} €</p>
+			</div>
+		</div>
+		<button
+			class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-all delete-btn">
+			<i data-lucide="trash-2" class="w-4 h-4"></i>
+		</button>
+	</div>
+	{{/each}}
+</div>
+
+<!-- Modal for New Ingredient -->
+<div id="ingredientModal" class="fixed inset-0 z-50 hidden transition-all duration-300">
+	<div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+		onclick="hideModal('ingredientModal')"></div>
+	<div class="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300"
+		id="ingredientModalContainer">
+		<div class="p-6 border-b border-gray-100 flex items-center justify-between bg-primary text-white">
+			<div class="flex items-center gap-3">
+				<i data-lucide="plus-circle"></i>
+				<h2 class="text-xl font-bold">Nuovo Ingrediente</h2>
+			</div>
+			<button onclick="hideModal('ingredientModal')" class="p-2 hover:bg-white/20 rounded-full transition-colors">
+				<i data-lucide="x"></i>
+			</button>
+		</div>
+
+		<form id="newIngredientForm" class="flex-1 p-6 space-y-6">
+			<div class="space-y-1">
+				<label class="text-sm font-semibold text-neutral-secondary">Nome Ingrediente</label>
+				<input type="text" id="Name" required placeholder="Es. Pomodori"
+					class="w-full px-4 py-2 border border-gray-200 rounded-custom focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+			</div>
+			<div class="space-y-1">
+				<label class="text-sm font-semibold text-neutral-secondary">Prezzo stimato (€)</label>
+				<input type="number" step="0.01" id="Price" placeholder="0.00"
+					class="w-full px-4 py-2 border border-gray-200 rounded-custom focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+			</div>
+		</form>
+
+		<div class="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
+			<button onclick="hideModal('ingredientModal')"
+				class="flex-1 px-4 py-3 border border-gray-200 rounded-custom font-semibold hover:bg-gray-100 transition-colors">Annulla</button>
+			<button id="submitButton" class="flex-1 btn-primary justify-center font-bold">Aggiungi</button>
+		</div>
+	</div>
+</div>
+
+<script>
+
+	document.addEventListener("DOMContentLoaded", () => {
+		updateStats();
+		loadTableListeners();
+		lucide.createIcons();
+	});
+
+	function updateStats() {
+		const cards = document.querySelectorAll('.ingredient-card');
+		document.getElementById('stats-total-ing').textContent = cards.length;
+	}
+
+	function loadTableListeners() {
+		const cards = document.querySelectorAll(".ingredient-card");
+		cards.forEach(card => {
+			const deleteBtn = card.querySelector('.delete-btn');
+			deleteBtn.onclick = async (e) => {
+				e.stopPropagation();
+				if (!confirm(`Eliminare ${card.dataset.name}?`)) return;
+
+				const jlastName = { 'Name': card.dataset.name };
+				try {
+					const response = await fetch("/DELETEingredient", {
+						method: "POST",
+						body: JSON.stringify(jlastName),
+						headers: { "Content-Type": "application/json" }
+					});
+					if (response.ok) {
+						const ingred = await response.json();
+						renderIngredients(ingred);
+					}
+				} catch (err) { console.error(err); }
+			};
+		});
+	}
+
+	document.getElementById("submitButton").addEventListener("click", async (e) => {
+		e.preventDefault();
+		const nameInput = document.getElementById("Name");
+		const priceInput = document.getElementById("Price");
+
+		if (!nameInput.value) return;
+
+		try {
+			const ingrData = {
+				Name: nameInput.value,
+				Price: priceInput.value
+			};
+			const response = await fetch("/Ningrediente", {
+				method: "POST",
+				body: JSON.stringify(ingrData),
+				headers: { "Content-Type": "application/json" }
+			});
+			if (response.ok) {
+				const ingredi = await response.json();
+				renderIngredients(ingredi);
+				hideModal('ingredientModal');
+				document.getElementById("newIngredientForm").reset();
+			}
+		} catch (err) { console.error(err); }
+	});
+
+	function renderIngredients(ingredi) {
+		const container = document.getElementById("ingredients-container");
+		container.innerHTML = "";
+
+		ingredi.forEach(ing => {
+			const div = document.createElement("div");
+			div.className = "ingredient-card bg-white p-4 rounded-custom border border-gray-100 shadow-subtle hover:shadow-md transition-all group flex items-center justify-between cursor-pointer";
+			div.dataset.name = ing.Name;
+			div.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                        <i data-lucide="carrot" class="w-5 h-5 text-neutral-secondary group-hover:text-primary transition-colors"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-neutral-text group-hover:text-primary transition-colors">${ing.Name}</p>
+                        <p class="text-xs font-semibold text-primary">${ing.Price} €</p>
+                    </div>
+                </div>
+                <button class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-all delete-btn">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            `;
+			container.appendChild(div);
+		});
+
+		lucide.createIcons();
+		loadTableListeners();
+		updateStats();
+	}
+</script>
