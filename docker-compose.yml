@@ -2,7 +2,7 @@ services:
   app_menu:        # <--- Manca il nome del servizio
     build: .           # <--- Punto (.) indica che il Dockerfile è nella stessa cartella
     ports:
-      - "53140:53140"  # <--- Mappa la porta dell'host a quella del container
+      - "53149:53149"  # <--- Mappa la porta dell'host a quella del container
     restart: always
     env_file:
       - .env
