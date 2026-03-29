@@ -29,7 +29,7 @@ app.get('/ricette', async (req, res) => {
 	}
 });
 
-app.get('/menu', async (req, res) => {
+app.get('/', async (req, res) => {
 	try {
 		const menu = await db.getAllMenu();
 		res.render('menu', { menu: menu });
