@@ -70,8 +70,13 @@
 			</div>
 			<span class="hidden lg:block font-bold text-xl tracking-tight text-primary">Menu App</span>
 		</div>
-
 		<nav class="flex-1 px-4 py-6 space-y-2">
+<a id="HUB" href="" class="inline-flex items-center gap-2 px-3 py-2 border bg-purple-300 border-gray-300 text-gray-600 rounded-md no-underline">
+  <img src="/images/img0.png" alt="Icona" class="w-8 h-8 rounded-full" />
+  <span>MyHUB</span>
+</a>
+
+	  	<hr />
 			<a href="/" class="nav-link" id="nav-menu">
 				<i data-lucide="calendar"></i>
 				<span class="hidden lg:block">I miei Menu</span>
@@ -100,7 +105,6 @@
 
 	<!-- Main Content Area -->
 	<div class="flex-1 flex flex-col ml-20 lg:ml-64 transition-all duration-300">
-
 		<!-- Main Workspace - Header removed as requested -->
 		<main class="flex-1 p-8">
 			<div class="max-w-7xl mx-auto">
@@ -123,6 +127,23 @@
 		if (currentPath.includes('/menu')) document.getElementById('nav-menu').classList.add('active');
 		if (currentPath.includes('/ricette')) document.getElementById('nav-ricette').classList.add('active');
 		if (currentPath.includes('/ingredienti')) document.getElementById('nav-ingredienti').classList.add('active');
+		
+		const porta = 7777;
+
+		  function go() {
+			const host = window.location.hostname;
+			const protocol = window.location.protocol === "https:" ? "https:" : "http:";
+			const pagina = "/pag.html";
+			const url = `${protocol}//${host}:${porta}${pagina}`;
+			const elemento = document.getElementById("HUB");
+			if (elemento) elemento.href = url;
+		  }
+
+		  if (document.readyState === "loading") {
+			document.addEventListener("DOMContentLoaded", go);
+		  } else {
+			go();
+		  }
 	</script>
 
 	<!-- Global Script for Modals -->
